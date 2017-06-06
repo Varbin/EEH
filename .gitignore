@@ -5,11 +5,13 @@ __pycache__/
 
 # C extensions
 *.so
+*.pid
 
 # Distribution / packaging
 .Python
 env/
 build/
+_build/
 develop-eggs/
 dist/
 downloads/
