@@ -10,4 +10,4 @@ install:
   - python setup.py build install
 
 script: 
-  - pytest --cov=EEHlib
+  - python -m pytest --cov=EEHlib
