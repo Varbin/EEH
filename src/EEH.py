@@ -327,17 +327,29 @@ def main(config, mode):
 
     internal_logger.info("READY TO START.")  # Program started 
 
-    # Start the actual server
-    # The server binds here (with possible resuse!)
-    a = EEHd(
-        address, ('', 0),
+    kwargs = dict(
         user_driver=driver, delivery=delivery,
         domains=domains, check_domains=check_domains,
         enable_SMTPUTF8=c["Encoding"].getboolean("smtputf8"),
         decode_data=not c["Encoding"].getboolean("smtputf8"),
         extra_gc=c["Performance"].getboolean("Additional garbage collection"),
         rbls=rbls, ssl_ctx=context, data_size_limit=data_size_limit,
-        banner=c["Security"]["Banner"])
+        banner=c["Security"]["Banner"]
+    )
+
+    if sys.version_info < (3,5):
+        internal_logger.warn(
+         "SMTPUTF8 is enabled by Python, "
+         "this may be different from config. "
+         "8BITMIME is not supported.")
+        del kwargs["enable_SMTPUTF8"]
+        del kwargs["decode_data"]
+
+    # Start the actual server
+    # The server binds here (with possible resuse!)
+    a = EEHd(
+        address, ('', 0), **kwargs)
+        )
     a  # Prevents code not used errors :)
 
     # Do privilege drop here!
