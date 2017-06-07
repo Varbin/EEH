@@ -24,6 +24,8 @@ statusmap = {
     NONE: (250, "equivocal SPF header"),
 }
 
+def _status(code):
+    return (code, ) + statusmap[code]
 
 def handle_all(arg, domain):
     return lambda c: True
@@ -158,7 +160,7 @@ def spf(domain, greeting):
             policy = answer.strings[0]
             break
     else:
-        return (NEUTRAL, *statusmap[NEUTRAL])
+        return _status(NEUTRAL)
 
     spfp = policy.decode().lower().split(" ")[1:]
 
@@ -193,11 +195,11 @@ def spf(domain, greeting):
         if action == "redirect":
             return spf(param, greeting)
         elif action not in MECHANISMS:
-            return (PERMERROR, *statusmap[PERMERROR])
+            _status(PERMERROR)
         else:
             # print(verb, action, param, MECHANISMS[action](param, domain)(greeting))
             if MECHANISMS[action](param, domain)(greeting):
-                return (verb, *statusmap[verb])
+                _status(verb)
 
     else:
-        return (NONE, *statusmap[NONE])
+        return _status(NONE)
