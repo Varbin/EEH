@@ -349,7 +349,7 @@ def main(config, mode):
     # The server binds here (with possible resuse!)
     a = EEHd(
         address, ('', 0), **kwargs)
-        )
+
     a  # Prevents code not used errors :)
 
     # Do privilege drop here!
