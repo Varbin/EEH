@@ -10,4 +10,4 @@ install:
   - pip install -e .
 
 script: 
-  - python -m pytest nose --with-coverage --cover-package=EEHlib --cover-package=EEH
+  - python -m nose --with-coverage --cover-package=EEHlib --cover-package=EEH
