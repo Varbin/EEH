@@ -14,3 +14,11 @@ def test_users():
     assert not b.update_if_required()
     assert not b.is_accepted_user(rand_string())
     assert not b.resolve_user(rand_string())
+    
+    
+if __name__ == "__main__":
+    import __main__
+    for i in dir(__main__):
+        if i.startswith("test_"):
+            print("---", i)
+            eval(i).__call__()

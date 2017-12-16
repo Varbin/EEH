@@ -1,11 +1,14 @@
 import os
 from threading import Thread
-from smtplib import SMTP
 from socket import getfqdn
 from functools import partial
 import pytest
+import time
 
-PATH = os.path.dirname(__file__)
+from _smtp_wait import SMTP
+Connection = partial(SMTP, "localhost", 10025)
+
+PATH = os.path.abspath(os.path.dirname(__file__))
 
 from EEH import main
 
@@ -21,7 +24,6 @@ def background_server():
     return p
 
 b = background_server()
-Connection = partial(SMTP, "localhost", 10025)
 
 def test_helo():
     with Connection() as s:
@@ -125,6 +127,6 @@ if __name__ == "__main__":
     i = None
     for i in globals().keys():
         if i.startswith("test_"):
-            print(i)
+            print('---', i)
             eval(i).__call__()
 

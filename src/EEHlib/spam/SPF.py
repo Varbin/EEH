@@ -2,6 +2,9 @@ from dns.resolver import Resolver
 import socket
 import ipaddress
 
+import os
+DEBUG = os.environ.get("EEHDEBUG_SPF")
+
 __version__ = "0.0.1"
 
 PASS = "pass"
@@ -155,7 +158,8 @@ def spf(domain, greeting):
     r = Resolver()
     answers = r.query(domain, "TXT")
     for answer in answers:
-        # print(answer.strings[0])
+        if DEBUG:
+            print(answer.strings[0])
         if answer.strings[0].startswith(b"v=spf"):
             policy = answer.strings[0]
             break
@@ -181,7 +185,8 @@ def spf(domain, greeting):
         else:
             verb = PASS
 
-        # print(action)
+        if DEBUG:    
+            print(action)
 
         if ":" in action:
             action, _, param = action.partition(":")
@@ -190,16 +195,18 @@ def spf(domain, greeting):
         else:
             param = ""
 
-        # print(param)
+        if DEBUG:
+            print(param)
 
         if action == "redirect":
             return spf(param, greeting)
         elif action not in MECHANISMS:
             _status(PERMERROR)
         else:
-            # print(verb, action, param, MECHANISMS[action](param, domain)(greeting))
+            if DEBUG:
+                print(verb, action, param, MECHANISMS[action](param, domain)(greeting))
             if MECHANISMS[action](param, domain)(greeting):
-                _status(verb)
+                return _status(verb)
 
     else:
         return _status(NONE)

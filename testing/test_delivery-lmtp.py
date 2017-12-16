@@ -1,10 +1,18 @@
 import pytest
 import mailbox
 import asyncore
+import time
 
 from multiprocessing import Process
+from functools import partial
 from smtpd import SMTPChannel, SMTPServer
 
+from _smtp_wait import SMTP
+Connection = partial(SMTP, "localhost", 10024)  # wait for server
+
+def wait_for_server():
+    with Connection() as s:
+        s.quit()
 
 class LMTPChannel(SMTPChannel):
   # LMTP "LHLO" command is routed to the SMTP/ESMTP command
@@ -68,13 +76,20 @@ def test_syntax():
 def test_connection():
     d = Delivery(CONFIG_LOCAL)
     assert not d.deliver("test", "invalid.fqdn", "Test", "test@example.org")
+    
     b = background_server(False)
+    
+    wait_for_server()
+
     try:
         assert d.deliver("test", "invalid.fqdn", "Test", "test@example.org")
     finally:
         b.terminate()
     
     b = background_server(True)
+    
+    wait_for_server()
+
     try:
         assert not d.deliver(
             "test", "invalid.fqdn", "Test", "test@example.org")
@@ -86,6 +101,7 @@ def test_eenforce():
     c["Enforce encryption"] = True
     d = Delivery(c)
     b = background_server(False)
+    wait_for_server()
     try:
         assert not d.deliver(
             "test", "invalid.fqdn", "Test", "test@example.org")
@@ -97,6 +113,7 @@ def test_failedauth():
         "Url":"tcp://test@localhost:10024"})
     d = Delivery(c)
     b = background_server(False)
+    wait_for_server()
     try:
         assert not d.deliver(
             "test", "invalid.fqdn", "Test", "test@example.org")
@@ -106,6 +123,7 @@ def test_failedauth():
 def test_smtp():
     d = Delivery(CONFIG_LOCAL)
     b = background_server(False, SMTPChannel)
+    wait_for_server()
     try:
         assert not d.deliver(
             "test", "invalid.fqdn", "Test", "test@example.org")

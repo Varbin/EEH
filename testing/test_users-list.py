@@ -59,5 +59,5 @@ if __name__ == "__main__":
     i = None
     for i in globals().keys():
         if i.startswith("test_"):
-            print(i)
+            print('---', i)
             eval(i).__call__()

@@ -4,5 +4,7 @@ ldap3~=2.2
 pyasn1~=0.2.0
 
 pytest
-pytest-cov>=2.0.0
-pytest-runner>=2.0.0
+nose
+coverage
+
+antispam~=0.0.10
