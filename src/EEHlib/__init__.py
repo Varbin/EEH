@@ -176,7 +176,7 @@ class EEHd(smtpd.SMTPServer):
         message = email.message_from_bytes(data)
         message["Received"] = recieved_header
 
-        m = str(message)
+        # m = str(message)
 
         success_count = 0
         failure_count = 0
